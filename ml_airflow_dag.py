@@ -51,7 +51,7 @@ def feature_engineering(**kwargs): # **kwargs =디폴트 펑션 타입 이건 �
 
 #op_kwargs={"model_name":"GradientBoosting"},
 #op_kwargs={"model_name":"RandomFroest"} d이렇게 넘어온다
-def train_model(model_name,**kawrgs):
+def train_model(model_name,**kwargs):
     ti = kwargs["ti"]
     x_train = pd.read_json(ti.xcom_pull(key="x_train",task_ids="feature_engineering"))
     x_test = pd.read_json(ti.xcom_pull(key="x_test",task_ids="feature_engineering"))
