@@ -43,11 +43,11 @@ def feature_engineering(**kwargs): # **kwargs =디폴트 펑션 타입 이건 �
 
     # 이 데이터를 넘겨줘야함 -> xcom 을 활용하여 데이터 저장
     ti = kwargs["ti"] #ti 는 테스크 인스턴스
-    ti.xcom_push(key="x_train", value=x_train.to_json(),orient="column") 
+    ti.xcom_push(key="x_train", value=x_train.to_json(orient='columns')) 
     # to_joson 은 컬럼의 값을 일렬로 쭉 늘어세운다, 컬럼단위로 일렬로쪼개서 달라
-    ti.xcom_push(key="x_test", value=x_test.to_json(),orient="column")
-    ti.xcom_push(key="y_train", value=y_train.to_json(),orient="records") #y값은 한줄이라 레코드라 입력
-    ti.xcom_push(key="y_test", value=y_test.to_json(),orient="records")
+    ti.xcom_push(key="x_test", value=x_test.to_json(orient='columns')) # 컬럼 단위로 기본 적용이라 굳이 안써도됨
+    ti.xcom_push(key="y_train", value=y_train.to_json(orient="records")) #y값은 한줄이라 레코드라 입력
+    ti.xcom_push(key="y_test", value=y_test.to_json(orient="records"))
 
 #op_kwargs={"model_name":"GradientBoosting"},
 #op_kwargs={"model_name":"RandomFroest"} d이렇게 넘어온다
