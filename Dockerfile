@@ -5,6 +5,7 @@ ENV AIRFLOW_HOME=/usr/local/airflow
 RUN apt-get update && \
 	apt-get install -y gcc libc-dev vim procps && \
 	rm -rf /var/lib/apt/lists/*
+	
 RUN apt-get update && apt-get install -y supervisor
 
 RUN pip install apache-airflow
