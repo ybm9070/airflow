@@ -1,0 +1,87 @@
+'''
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn import tree
+from sklearn.metrics import accuracy_score, classification_report
+import pandas as pd
+import numpy as np
+from airflow import DAG
+from airflow.operators.python import PythonOperator
+from datetime import datetime, timedelta
+import pendulum  # for local time zone
+
+# Set timezone to Asia/Seoul
+local_tz = pendulum.timezone("Asia/Seoul")
+
+# Default args
+default_args = {
+    "owner": "han",
+    "depends_on_past": False,
+    "start_date": datetime(2025, 2, 5, tzinfo=local_tz),
+    "email_on_retry": False,
+    "email_on_failure": False,
+    "retries": 1,
+    "retry_delay": timedelta(minutes=5),
+}
+
+# Define DAG
+dag = DAG(
+    "ML_TREE",
+    default_args=default_args,
+    description="my airflow",
+    schedule_interval=timedelta(days=1),
+)
+
+def data_collection_and_preprocessing(word=None):
+    iris = load_iris()
+    print(f"데이터 수집 및 전처리: {word}")
+    return iris
+
+def train_decision_tree(word=None):
+    print(f"Decision Tree 모델 학습: {word}")
+
+def train_random_forest(word=None):
+    print(f"Random Forest 모델 학습: {word}")
+
+def select_best_model(word=None):
+    print(f"최고 모델 선택: {word}")
+
+# Task 정의
+previous_task = None
+input_words = "python very easy airflow more ..."
+for i, word in enumerate(input_words.split()):
+    task1 = PythonOperator(
+        task_id=f"data_collection_{i}",
+        python_callable=data_collection_and_preprocessing,
+        op_kwargs={"word": word},
+        dag=dag,
+    )
+
+    task2 = PythonOperator(
+        task_id=f"train_decision_tree_{i}",
+        python_callable=train_decision_tree,
+        op_kwargs={"word": word},
+        dag=dag,
+    )
+
+    task3 = PythonOperator(
+        task_id=f"train_random_forest_{i}",
+        python_callable=train_random_forest,
+        op_kwargs={"word": word},
+        dag=dag,
+    )
+
+    task4 = PythonOperator(
+        task_id=f"select_best_model_{i}",
+        python_callable=select_best_model,
+        op_kwargs={"word": word},
+        dag=dag,
+    )
+
+    if previous_task:
+        previous_task >> task1 >> [task2 ,task3] >> task4
+    previous_task = task4
+
+'''
+
